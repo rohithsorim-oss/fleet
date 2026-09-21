@@ -1,0 +1,44 @@
+# Gradle
+.gradle/
+build/
+!build/libs/
+gradle-app.setting
+!gradle/wrapper/gradle-wrapper.jar
+!gradlew
+!gradlew.bat
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Secrets
+.env
+secrets/
+*.key
+*.pem
+*.json
+
+# Documentation
+Readme.md
+*.md
+
+# Docker
+Dockerfile
+.dockerignore
+compose.yaml
+
+# Test
+src/test/
