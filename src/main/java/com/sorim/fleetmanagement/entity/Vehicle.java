@@ -23,22 +23,22 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 17)
+    @Column(nullable = false, unique = true, length = 17, columnDefinition = "VARCHAR(17)")
     private String vin;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, columnDefinition = "VARCHAR(50)")
     private String make;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, columnDefinition = "VARCHAR(50)")
     private String model;
 
     @Column(nullable = false)
     private Integer year;
 
-    @Column(nullable = false, unique = true, length = 20)
+    @Column(nullable = false, unique = true, length = 20, columnDefinition = "VARCHAR(20)")
     private String licensePlate;
 
-    @Column(length = 30)
+    @Column(length = 30, columnDefinition = "VARCHAR(30)")
     private String color;
 
     @Column(nullable = false)
