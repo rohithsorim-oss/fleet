@@ -20,8 +20,8 @@ COPY src/ src/
 # Build the application
 RUN ./gradlew clean build -x test --no-daemon
 
-# Rename the JAR to a fixed name if it's not already named app.jar
-RUN if [ -f build/libs/app.jar ]; then echo "JAR already named app.jar"; else find build/libs -name "*.jar" -type f | head -n 1 | xargs -I {} mv {} build/libs/app.jar; fi
+# Rename the JAR to a fixed name
+RUN find build/libs -name "*.jar" -type f | head -n 1 | xargs -I {} mv {} build/libs/app.jar
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
