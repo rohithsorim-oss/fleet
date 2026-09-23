@@ -26,7 +26,7 @@ public class OpenApiConfig {
         localServer.setDescription("Local development server");
 
         Server productionServer = new Server();
-        productionServer.setUrl("https://api.fleetmanagement.com");
+        productionServer.setUrl("https://fleet-app-568582430679.us-central1.run.app/");
         productionServer.setDescription("Production server");
 
         Contact contact = new Contact();
