@@ -21,6 +21,8 @@ COPY src/ src/
 RUN ./gradlew clean build -x test --no-daemon
 
 # Rename the JAR to a fixed name
+RUN mv build/libs/*.jar build/libs/app.jar || true
+RUN rm -f build/libs/app.jar
 RUN mv build/libs/*.jar build/libs/app.jar
 
 # Runtime stage
