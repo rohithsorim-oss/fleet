@@ -41,7 +41,7 @@ steps:
       - '--port=8080'
       - '--cpu=1'
       - '--memory=512Mi'
-      - '--max-instances=100'
+      - '--max-instances=20'
       - '--min-instances=0'
       - '--timeout=300s'
       - '--set-env-vars=SPRING_PROFILES_ACTIVE=gcp'
