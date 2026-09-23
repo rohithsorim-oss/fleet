@@ -1,0 +1,67 @@
+# Cloud Build configuration for deploying to Cloud Run
+# Triggers on every commit to any branch
+
+steps:
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:latest'
+      - '.'
+    id: 'build'
+
+  # Push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:$COMMIT_SHA'
+    id: 'push-commit-sha'
+    waitFor: ['build']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:latest'
+    id: 'push-latest'
+    waitFor: ['build']
+
+  # Deploy to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'fleet-app'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--cpu=1'
+      - '--memory=512Mi'
+      - '--max-instances=100'
+      - '--min-instances=0'
+      - '--timeout=300s'
+      - '--set-env-vars=SPRING_PROFILES_ACTIVE=gcp'
+      - '--set-secrets=DB_URL=fleet-db-url:latest,DB_USERNAME=fleet-db-username:latest,DB_PASSWORD=fleet-db-password:latest,JWT_SECRET=fleet-jwt-secret:latest'
+    id: 'deploy'
+    waitFor: ['push-commit-sha']
+
+# Image to be built
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:latest'
+
+# Logs bucket (optional)
+# logsBucket: 'gs://$PROJECT_ID-cloudbuild-logs'
+
+# Timeout for the build
+timeout: '1800s'
+
+# Substitutions (can be overridden in trigger settings)
+substitutions:
+  _REGION: 'us-central1'
+  _SERVICE_NAME: 'fleet-app'
+  _REPO_NAME: 'fleet-repo'
