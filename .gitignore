@@ -40,3 +40,4 @@ out/
 .env.local
 .env.*.local
 *.json
+*.txt
