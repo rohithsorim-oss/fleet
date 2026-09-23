@@ -20,10 +20,8 @@ COPY src/ src/
 # Build the application
 RUN ./gradlew clean build -x test --no-daemon
 
-# Rename the JAR to a fixed name
-RUN mv build/libs/*.jar build/libs/app.jar || true
-RUN rm -f build/libs/app.jar
-RUN mv build/libs/*.jar build/libs/app.jar
+# Rename the JAR to a fixed name (find the bootJar)
+RUN find build/libs -name "*.jar" -type f | head -n 1 | xargs -I {} mv {} build/libs/app.jar
 
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
