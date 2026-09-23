@@ -45,8 +45,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 	implementation 'com.zaxxer:HikariCP:5.1.0'
 	implementation 'org.postgresql:postgresql'
-	// Temporarily disabled Cloud SQL socket factory to test basic PostgreSQL connection
-	// implementation 'com.google.cloud.sql:postgres-socket-factory:1.20.0'
+	implementation 'com.google.cloud.sql:postgres-socket-factory:1.20.0'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
