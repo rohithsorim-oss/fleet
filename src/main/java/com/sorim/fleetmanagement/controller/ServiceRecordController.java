@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,9 +62,9 @@ public class ServiceRecordController {
             @Parameter(description = "Filter by user ID", example = "1")
             @RequestParam(required = false) Long userId,
             @Parameter(description = "Page number (zero-based)", example = "0")
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Number of items per page", example = "10")
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") @Min(1) int size) {
         
         Pageable pageable = PageRequest.of(page, size);
         PageResponse<ServiceRecordResponse> response = serviceRecordService.getAllServiceRecords(
@@ -142,7 +144,7 @@ public class ServiceRecordController {
     })
     public ResponseEntity<ApiResponse<ServiceRecordResponse>> updateServiceStatus(
             @Parameter(description = "Service record ID", example = "1", required = true)
-            @PathVariable Long id,
+            @PathVariable @NotNull Long id,
             @Parameter(description = "Status update details", required = true)
             @Valid @RequestBody ServiceStatusUpdateRequest request) {
         ServiceRecordResponse response = serviceRecordService.updateServiceStatus(id, request);

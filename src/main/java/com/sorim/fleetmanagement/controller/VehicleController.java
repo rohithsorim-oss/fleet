@@ -14,6 +14,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,13 +67,13 @@ public class VehicleController {
             @Parameter(description = "Maximum year filter (inclusive)", example = "2024")
             @RequestParam(required = false) Integer maxYear,
             @Parameter(description = "Field to sort by", example = "year")
-            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "id") @NotBlank String sortBy,
             @Parameter(description = "Sort direction (asc or desc)", example = "desc")
-            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(defaultValue = "desc") @NotBlank String sortDir,
             @Parameter(description = "Page number (zero-based)", example = "0")
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Number of items per page", example = "10")
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") @Min(1) int size) {
         
         Pageable pageable = PageRequest.of(page, size);
         PageResponse<VehicleResponse> response = vehicleService.getAllVehicles(
@@ -103,7 +106,7 @@ public class VehicleController {
     })
     public ResponseEntity<ApiResponse<VehicleResponse>> getVehicleById(
             @Parameter(description = "Vehicle ID", example = "1", required = true)
-            @PathVariable Long id) {
+            @PathVariable @NotNull Long id) {
         VehicleResponse response = vehicleService.getVehicleById(id);
         return ResponseEntity.ok(ApiResponse.success("Vehicle retrieved", response));
     }
@@ -180,7 +183,7 @@ public class VehicleController {
     })
     public ResponseEntity<ApiResponse<VehicleResponse>> updateVehicle(
             @Parameter(description = "Vehicle ID", example = "1", required = true)
-            @PathVariable Long id,
+            @PathVariable @NotNull Long id,
             @Parameter(description = "Vehicle update details", required = true)
             @Valid @RequestBody VehicleUpdateRequest request) {
         VehicleResponse response = vehicleService.updateVehicle(id, request);
@@ -217,7 +220,7 @@ public class VehicleController {
     })
     public ResponseEntity<ApiResponse<Void>> deleteVehicle(
             @Parameter(description = "Vehicle ID", example = "1", required = true)
-            @PathVariable Long id) {
+            @PathVariable @NotNull Long id) {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.ok(ApiResponse.success("Vehicle deleted successfully", null));
     }

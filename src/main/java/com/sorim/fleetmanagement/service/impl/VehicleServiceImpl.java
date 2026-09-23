@@ -13,6 +13,7 @@ import com.sorim.fleetmanagement.exception.ResourceNotFoundException;
 import com.sorim.fleetmanagement.repository.VehicleCategoryRepository;
 import com.sorim.fleetmanagement.repository.VehicleRepository;
 import com.sorim.fleetmanagement.security.UserPrincipal;
+import org.springframework.security.core.Authentication;
 import com.sorim.fleetmanagement.service.VehicleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,7 +35,9 @@ public class VehicleServiceImpl implements VehicleService {
     public PageResponse<VehicleResponse> getAllVehicles(String search, VehicleStatus status, Long categoryId,
                                                           Integer minYear, Integer maxYear, String sortBy,
                                                           String sortDir, Pageable pageable) {
-        Sort sort = Sort.by(sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy);
+        String effectiveSortBy = (sortBy != null && !sortBy.trim().isEmpty()) ? sortBy : "id";
+        String effectiveSortDir = (sortDir != null && !sortDir.trim().isEmpty()) ? sortDir : "desc";
+        Sort sort = Sort.by(effectiveSortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, effectiveSortBy);
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
         Page<Vehicle> vehicles = vehicleRepository.searchVehicles(search, status, categoryId, minYear, maxYear, sortedPageable);
@@ -61,7 +64,11 @@ public class VehicleServiceImpl implements VehicleService {
         VehicleCategory category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("VehicleCategory", request.getCategoryId()));
 
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new BadRequestException("User not authenticated");
+        }
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User currentUser = new User();
         currentUser.setId(userPrincipal.getId());
 
@@ -104,7 +111,7 @@ public class VehicleServiceImpl implements VehicleService {
         vehicle.setColor(request.getColor());
         vehicle.setMileage(request.getMileage());
         vehicle.setDailyRentalRate(request.getDailyRentalRate());
-        vehicle.setStatus(request.getStatus());
+        vehicle.setStatus(request.getStatus() != null ? request.getStatus() : vehicle.getStatus());
         vehicle.setImageUrl(request.getImageUrl());
         vehicle.setCategory(category);
 

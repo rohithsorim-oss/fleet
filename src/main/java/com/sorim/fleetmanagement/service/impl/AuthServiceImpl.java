@@ -63,6 +63,9 @@ public class AuthServiceImpl implements AuthService {
 
         String token = tokenProvider.generateToken(authentication);
 
+        if (authentication.getPrincipal() == null) {
+            throw new BadRequestException("Authentication failed");
+        }
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new BadRequestException("User not found"));
@@ -73,6 +76,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponse getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new BadRequestException("User not authenticated");
+        }
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
         User user = userRepository.findById(userPrincipal.getId())

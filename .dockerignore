@@ -39,6 +39,7 @@ Readme.md
 Dockerfile
 .dockerignore
 compose.yaml
+*.tar
 
 # Test
 src/test/

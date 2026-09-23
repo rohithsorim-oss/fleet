@@ -14,6 +14,7 @@ import com.sorim.fleetmanagement.exception.ResourceNotFoundException;
 import com.sorim.fleetmanagement.repository.ServiceRecordRepository;
 import com.sorim.fleetmanagement.repository.VehicleRepository;
 import com.sorim.fleetmanagement.security.UserPrincipal;
+import org.springframework.security.core.Authentication;
 import com.sorim.fleetmanagement.service.ServiceRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,7 +35,11 @@ public class ServiceRecordServiceImpl implements ServiceRecordService {
 
     @Override
     public PageResponse<ServiceRecordResponse> getAllServiceRecords(ServiceStatus status, Long vehicleId, Long userId, Pageable pageable) {
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new BadRequestException("User not authenticated");
+        }
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         
         Long effectiveUserId = userId;
         if (userId == null && userPrincipal.getRole() == Role.ROLE_USER) {
@@ -58,7 +63,11 @@ public class ServiceRecordServiceImpl implements ServiceRecordService {
         Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle", request.getVehicleId()));
 
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new BadRequestException("User not authenticated");
+        }
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User currentUser = new User();
         currentUser.setId(userPrincipal.getId());
 
@@ -78,6 +87,9 @@ public class ServiceRecordServiceImpl implements ServiceRecordService {
     @Override
     @Transactional
     public ServiceRecordResponse updateServiceStatus(Long id, ServiceStatusUpdateRequest request) {
+        if (request.getStatus() == null) {
+            throw new BadRequestException("Status is required");
+        }
         ServiceRecord serviceRecord = serviceRecordRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ServiceRecord", id));
 
