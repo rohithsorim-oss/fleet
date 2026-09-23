@@ -54,8 +54,8 @@ images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:$COMMIT_SHA'
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/fleet-repo/fleet-app:latest'
 
-# Logs bucket (optional)
-# logsBucket: 'gs://$PROJECT_ID-cloudbuild-logs'
+# Logs bucket (required when using service account)
+logsBucket: 'gs://$PROJECT_ID-cloudbuild-logs'
 
 # Timeout for the build
 timeout: '1800s'

@@ -39,7 +39,15 @@ gcloud services enable secretmanager.googleapis.com
 
 ---
 
-## Step 2: Create Artifact Registry Repository
+## Step 2: Create Cloud Storage Bucket for Build Logs
+
+Create a bucket to store Cloud Build logs:
+
+```bash
+gsutil mb -p $PROJECT_ID -l us-central1 gs://$PROJECT_ID-cloudbuild-logs
+```
+
+## Step 3: Create Artifact Registry Repository
 
 Create a Docker repository in Artifact Registry to store your container images:
 
@@ -52,7 +60,7 @@ gcloud artifacts repositories create fleet-repo \
 
 ---
 
-## Step 3: Set Up Cloud Build Permissions
+## Step 4: Set Up Cloud Build Permissions
 
 Grant Cloud Build service account permission to deploy to Cloud Run and access Artifact Registry:
 
@@ -94,7 +102,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 ---
 
-## Step 4: Create Secrets in Secret Manager
+## Step 5: Create Secrets in Secret Manager
 
 Store sensitive configuration as secrets:
 
@@ -115,7 +123,7 @@ gcloud secrets create fleet-jwt-secret --data-file=- <<< "your_jwt_secret_key_he
 
 ---
 
-## Step 5: Create Cloud SQL Instance (if not already created)
+## Step 6: Create Cloud SQL Instance (if not already created)
 
 ```bash
 # Create PostgreSQL instance
@@ -142,7 +150,7 @@ gcloud sql users create fleet_user \
 
 ---
 
-## Step 6: Configure Cloud Build Trigger
+## Step 7: Configure Cloud Build Trigger
 
 ### Option A: Using Google Cloud Console
 
@@ -175,7 +183,7 @@ gcloud builds triggers create github \
 
 ---
 
-## Step 7: Application Configuration Changes
+## Step 8: Application Configuration Changes
 
 ### Add GCP-specific application properties
 
@@ -218,9 +226,17 @@ The current Dockerfile is already configured for Cloud Run with:
 
 No changes needed to the Dockerfile.
 
+### Important: No key.json Required
+
+For Cloud Run deployment, **do not use key.json files**. Instead:
+- Cloud Run uses IAM-based authentication automatically
+- The Cloud SQL socket factory (`com.google.cloud.sql.postgres.SocketFactory`) uses the instance's service account
+- Ensure the Cloud Run service account has the `cloudsql.client` IAM role (granted in Step 3)
+- Database credentials are stored in Secret Manager (DB_USERNAME, DB_PASSWORD)
+
 ---
 
-## Step 8: Verify Deployment
+## Step 9: Verify Deployment
 
 After pushing a commit, verify the deployment:
 
@@ -241,7 +257,7 @@ gcloud builds log [BUILD_ID]
 
 ---
 
-## Step 9: Configure Branch-Specific Deployments (Optional)
+## Step 10: Configure Branch-Specific Deployments (Optional)
 
 If you want different deployments for different branches (e.g., dev, staging, prod), modify `cloudbuild.yaml` to use branch-specific service names:
 
@@ -276,7 +292,7 @@ If you want different deployments for different branches (e.g., dev, staging, pr
 
 ---
 
-## Step 10: Set Up Monitoring and Alerts (Optional)
+## Step 11: Set Up Monitoring and Alerts (Optional)
 
 ```bash
 # Create a log-based alert for deployment failures
