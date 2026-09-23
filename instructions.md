@@ -45,6 +45,16 @@ Create a bucket to store Cloud Build logs:
 
 ```bash
 gsutil mb -p $PROJECT_ID -l us-central1 gs://$PROJECT_ID-cloudbuild-logs
+
+# Grant the Cloud Build/default compute service account access to the bucket
+# Replace with your actual service account if different from the default
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+CLOUD_BUILD_SA="${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com"
+
+gsutil iam ch "serviceAccount:${CLOUD_BUILD_SA}:objectAdmin" gs://$PROJECT_ID-cloudbuild-logs
+
+# If you're using a custom service account (like terraform1@...), grant it access too
+# gsutil iam ch "serviceAccount:terraform1@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin" gs://$PROJECT_ID-cloudbuild-logs
 ```
 
 ## Step 3: Create Artifact Registry Repository
