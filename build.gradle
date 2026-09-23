@@ -64,6 +64,7 @@ tasks.named('test') {
 // Ensure all dependencies are included in the bootJar
 bootJar {
 	enabled = true
+	archiveFileName = 'app.jar'
 }
 
 jacocoTestReport {
