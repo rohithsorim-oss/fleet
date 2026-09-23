@@ -109,7 +109,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:$CLOUD_BUILD_SA" \
     --role="roles/secretmanager.secretAccessor"
 
-# Grant Cloud Run service account access to secrets
+# Grant Cloud Run service account access to secrets and Cloud SQL
 # Cloud Run uses the Compute Engine default service account
 PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
 CLOUD_RUN_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
@@ -117,6 +117,10 @@ CLOUD_RUN_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 gcloud projects add-iam-policy-binding $PROJECT_ID \
     --member="serviceAccount:${CLOUD_RUN_SA}" \
     --role="roles/secretmanager.secretAccessor"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:${CLOUD_RUN_SA}" \
+    --role="roles/cloudsql.client"
 ```
 
 ---
@@ -216,7 +220,7 @@ server.port=${SERVER_PORT:8080}
 spring.datasource.url=${DB_URL}
 spring.datasource.username=${DB_USERNAME}
 spring.datasource.password=${DB_PASSWORD}
-spring.datasource.driver-class-name=org.postgresql
+spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA/Hibernate Configuration
 spring.jpa.hibernate.ddl-auto=update
