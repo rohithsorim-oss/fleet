@@ -83,7 +83,7 @@ public class VehicleController {
                 // Invalid status value, ignore and treat as null
             }
         }
-
+        search = search == null ? "" : search;
         Pageable pageable = PageRequest.of(page, size);
         PageResponse<VehicleResponse> response = vehicleService.getAllVehicles(
                 search, statusEnum, categoryId, minYear, maxYear, sortBy, sortDir, pageable);
