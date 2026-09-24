@@ -59,7 +59,7 @@ public class VehicleController {
             @Parameter(description = "Search term to filter vehicles by make, model, or license plate", example = "Toyota")
             @RequestParam(required = false) String search,
             @Parameter(description = "Filter by vehicle status", schema = @Schema(type = "string", allowableValues = {"AVAILABLE", "RENTED", "MAINTENANCE", "OUT_OF_SERVICE"}))
-            @RequestParam(required = false) VehicleStatus status,
+            @RequestParam(required = false) String status,
             @Parameter(description = "Filter by vehicle category ID", example = "1")
             @RequestParam(required = false) Long categoryId,
             @Parameter(description = "Minimum year filter (inclusive)", example = "2020")
@@ -67,17 +67,26 @@ public class VehicleController {
             @Parameter(description = "Maximum year filter (inclusive)", example = "2024")
             @RequestParam(required = false) Integer maxYear,
             @Parameter(description = "Field to sort by", example = "year")
-            @RequestParam(defaultValue = "id") @NotBlank String sortBy,
+            @RequestParam(defaultValue = "id") String sortBy,
             @Parameter(description = "Sort direction (asc or desc)", example = "desc")
-            @RequestParam(defaultValue = "desc") @NotBlank String sortDir,
+            @RequestParam(defaultValue = "desc") String sortDir,
             @Parameter(description = "Page number (zero-based)", example = "0")
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @Parameter(description = "Number of items per page", example = "10")
             @RequestParam(defaultValue = "10") @Min(1) int size) {
         
+        VehicleStatus statusEnum = null;
+        if (status != null && !status.trim().isEmpty()) {
+            try {
+                statusEnum = VehicleStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Invalid status value, ignore and treat as null
+            }
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         PageResponse<VehicleResponse> response = vehicleService.getAllVehicles(
-                search, status, categoryId, minYear, maxYear, sortBy, sortDir, pageable);
+                search, statusEnum, categoryId, minYear, maxYear, sortBy, sortDir, pageable);
         
         return ResponseEntity.ok(ApiResponse.success("Vehicles retrieved successfully", response));
     }

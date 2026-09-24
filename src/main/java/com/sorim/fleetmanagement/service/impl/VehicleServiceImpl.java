@@ -35,12 +35,13 @@ public class VehicleServiceImpl implements VehicleService {
     public PageResponse<VehicleResponse> getAllVehicles(String search, VehicleStatus status, Long categoryId,
                                                           Integer minYear, Integer maxYear, String sortBy,
                                                           String sortDir, Pageable pageable) {
+        String effectiveSearch = (search == null || search.trim().isEmpty()) ? null : search;
         String effectiveSortBy = (sortBy != null && !sortBy.trim().isEmpty()) ? sortBy : "id";
         String effectiveSortDir = (sortDir != null && !sortDir.trim().isEmpty()) ? sortDir : "desc";
         Sort sort = Sort.by(effectiveSortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, effectiveSortBy);
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-        Page<Vehicle> vehicles = vehicleRepository.searchVehicles(search, status, categoryId, minYear, maxYear, sortedPageable);
+        Page<Vehicle> vehicles = vehicleRepository.searchVehicles(effectiveSearch, status, categoryId, minYear, maxYear, sortedPageable);
         return PageResponse.of(vehicles.map(this::mapToResponse));
     }
 
