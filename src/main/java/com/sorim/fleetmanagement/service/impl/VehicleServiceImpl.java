@@ -46,6 +46,17 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
+    public PageResponse<VehicleResponse> getAllVehicles(String sortBy, String sortDir, Pageable pageable) {
+        String effectiveSortBy = (sortBy != null && !sortBy.trim().isEmpty()) ? sortBy : "id";
+        String effectiveSortDir = (sortDir != null && !sortDir.trim().isEmpty()) ? sortDir : "desc";
+        Sort sort = Sort.by(effectiveSortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, effectiveSortBy);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        Page<Vehicle> vehicles = vehicleRepository.findAll(sortedPageable);
+        return PageResponse.of(vehicles.map(this::mapToResponse));
+    }
+
+    @Override
     public VehicleResponse getVehicleById(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle", id));

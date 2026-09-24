@@ -11,6 +11,8 @@ public interface VehicleService {
     PageResponse<VehicleResponse> getAllVehicles(String search, VehicleStatus status, Long categoryId,
                                                   Integer minYear, Integer maxYear, String sortBy, String sortDir,
                                                   Pageable pageable);
+    PageResponse<VehicleResponse> getAllVehicles(String sortBy, String sortDir,
+                                                 Pageable pageable);
     VehicleResponse getVehicleById(Long id);
     VehicleResponse createVehicle(VehicleCreateRequest request);
     VehicleResponse updateVehicle(Long id, VehicleUpdateRequest request);

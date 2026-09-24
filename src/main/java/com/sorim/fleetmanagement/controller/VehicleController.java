@@ -1,5 +1,6 @@
 package com.sorim.fleetmanagement.controller;
 
+import com.google.common.base.Strings;
 import com.sorim.fleetmanagement.dto.request.VehicleCreateRequest;
 import com.sorim.fleetmanagement.dto.request.VehicleUpdateRequest;
 import com.sorim.fleetmanagement.dto.response.ApiResponse;
@@ -85,9 +86,14 @@ public class VehicleController {
         }
         search = search == null ? "" : search;
         Pageable pageable = PageRequest.of(page, size);
-        PageResponse<VehicleResponse> response = vehicleService.getAllVehicles(
-                search, statusEnum, categoryId, minYear, maxYear, sortBy, sortDir, pageable);
-        
+        PageResponse<VehicleResponse> response;
+        if (Strings.isNullOrEmpty(search) && Strings.isNullOrEmpty(status)) {
+            response = vehicleService.getAllVehicles(sortBy, sortDir, pageable);
+        } else {
+            response = vehicleService.getAllVehicles(
+                    search, statusEnum, categoryId, minYear, maxYear, sortBy, sortDir, pageable);
+        }
+
         return ResponseEntity.ok(ApiResponse.success("Vehicles retrieved successfully", response));
     }
 
