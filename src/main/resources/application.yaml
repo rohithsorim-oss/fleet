@@ -35,3 +35,14 @@ spring:
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
   expirationMs: ${JWT_EXPIRATION_MS:86400000}
+
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    org.springframework:
+      web: ${LOG_LEVEL_SPRING:INFO}
+      transaction: DEBUG
+    com.uvis.auth: ${LOG_LEVEL_AUTH:INFO}
+    com.sorim.uvis: ${LOG_LEVEL_UVIS:DEBUG}
+    com.zaxxer.hikari: TRACE
+    org.postgresql: DEBUG

@@ -58,7 +58,7 @@ public class VehicleController {
     public ResponseEntity<ApiResponse<PageResponse<VehicleResponse>>> getAllVehicles(
             @Parameter(description = "Search term to filter vehicles by make, model, or license plate", example = "Toyota")
             @RequestParam(required = false) String search,
-            @Parameter(description = "Filter by vehicle status", schema = @Schema(type = "string", allowableValues = {"AVAILABLE", "RENTED", "MAINTENANCE", "OUT_OF_SERVICE"}))
+            @Parameter(description = "Filter by vehicle status")
             @RequestParam(required = false) String status,
             @Parameter(description = "Filter by vehicle category ID", example = "1")
             @RequestParam(required = false) Long categoryId,
