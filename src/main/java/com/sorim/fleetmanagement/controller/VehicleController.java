@@ -1,12 +1,14 @@
 package com.sorim.fleetmanagement.controller;
 
 import com.google.common.base.Strings;
+import com.sorim.fleetmanagement.dto.request.EmailReportRequest;
 import com.sorim.fleetmanagement.dto.request.VehicleCreateRequest;
 import com.sorim.fleetmanagement.dto.request.VehicleUpdateRequest;
 import com.sorim.fleetmanagement.dto.response.ApiResponse;
 import com.sorim.fleetmanagement.dto.response.PageResponse;
 import com.sorim.fleetmanagement.dto.response.VehicleResponse;
 import com.sorim.fleetmanagement.entity.VehicleStatus;
+import com.sorim.fleetmanagement.service.EmailService;
 import com.sorim.fleetmanagement.service.ReportService;
 import com.sorim.fleetmanagement.service.VehicleService;
 
@@ -38,6 +40,7 @@ public class VehicleController {
 
     private final VehicleService vehicleService;
     private final ReportService reportService;
+    private final EmailService emailService;
 
     @GetMapping
     @Operation(
@@ -301,5 +304,35 @@ public class VehicleController {
                 sortBy,
                 sortDir
         );
+    }
+
+    @PostMapping("/report/email")
+    @Operation(
+            summary = "Send vehicle report via email with attachment",
+            description = "Generates a vehicle report (PDF or Excel) and sends it as an email attachment to specified recipients. Supports all the same filtering options as the report download endpoint. The email body supports HTML content."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Email sent successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request data or validation errors",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - JWT token required",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
+    public ResponseEntity<ApiResponse<Void>> sendVehicleReportEmail(
+            @Parameter(description = "Email request details including recipients, subject, body, and report parameters", required = true)
+            @Valid @RequestBody EmailReportRequest request) {
+        
+        ApiResponse<Void> response = emailService.sendVehicleReportEmail(request);
+        return ResponseEntity.ok(response);
     }
 }

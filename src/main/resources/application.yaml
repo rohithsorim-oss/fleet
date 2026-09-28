@@ -31,7 +31,21 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         connection:
           provider_disables_autocommit: true
-
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:rohith.sorim@gmail.com}
+    password: ${MAIL_PASSWORD:}
+    debug: ${MAIL_DEBUG:true}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          timeout: 5000
+          connectiontimeout: 5000
+          writetimeout: 5000
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
   expirationMs: ${JWT_EXPIRATION_MS:86400000}

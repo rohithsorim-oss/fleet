@@ -173,43 +173,19 @@ public class ReportServiceImpl implements ReportService {
 
     private void setCellValue(org.apache.poi.ss.usermodel.Cell cell, Vehicle vehicle, String column, DateTimeFormatter formatter) {
         switch (column) {
-            case "id":
-                cell.setCellValue(vehicle.getId());
-                break;
-            case "vin":
-                cell.setCellValue(vehicle.getVin());
-                break;
-            case "make":
-                cell.setCellValue(vehicle.getMake());
-                break;
-            case "model":
-                cell.setCellValue(vehicle.getModel());
-                break;
-            case "year":
-                cell.setCellValue(vehicle.getYear());
-                break;
-            case "licensePlate":
-                cell.setCellValue(vehicle.getLicensePlate());
-                break;
-            case "color":
-                cell.setCellValue(vehicle.getColor() != null ? vehicle.getColor() : "");
-                break;
-            case "mileage":
-                cell.setCellValue(vehicle.getMileage());
-                break;
-            case "dailyRentalRate":
-                cell.setCellValue(vehicle.getDailyRentalRate().doubleValue());
-                break;
-            case "status":
-                cell.setCellValue(vehicle.getStatus().toString());
-                break;
-            case "category":
-                cell.setCellValue(vehicle.getCategory() != null ? vehicle.getCategory().getName() : "");
-                break;
-            case "createdAt":
-                cell.setCellValue(vehicle.getCreatedAt() != null ? 
+            case "id" -> cell.setCellValue(vehicle.getId());
+            case "vin" -> cell.setCellValue(vehicle.getVin());
+            case "make" -> cell.setCellValue(vehicle.getMake());
+            case "model" -> cell.setCellValue(vehicle.getModel());
+            case "year" -> cell.setCellValue(vehicle.getYear());
+            case "licensePlate" -> cell.setCellValue(vehicle.getLicensePlate());
+            case "color" -> cell.setCellValue(vehicle.getColor() != null ? vehicle.getColor() : "");
+            case "mileage" -> cell.setCellValue(vehicle.getMileage());
+            case "dailyRentalRate" -> cell.setCellValue(vehicle.getDailyRentalRate().doubleValue());
+            case "status" -> cell.setCellValue(vehicle.getStatus().toString());
+            case "category" -> cell.setCellValue(vehicle.getCategory() != null ? vehicle.getCategory().getName() : "");
+            case "createdAt" -> cell.setCellValue(vehicle.getCreatedAt() != null ?
                     vehicle.getCreatedAt().format(formatter) : "");
-                break;
         }
     }
 
@@ -264,34 +240,21 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private String getCellValue(Vehicle vehicle, String column, DateTimeFormatter formatter) {
-        switch (column) {
-            case "id":
-                return String.valueOf(vehicle.getId());
-            case "vin":
-                return vehicle.getVin();
-            case "make":
-                return vehicle.getMake();
-            case "model":
-                return vehicle.getModel();
-            case "year":
-                return String.valueOf(vehicle.getYear());
-            case "licensePlate":
-                return vehicle.getLicensePlate();
-            case "color":
-                return vehicle.getColor() != null ? vehicle.getColor() : "";
-            case "mileage":
-                return String.valueOf(vehicle.getMileage());
-            case "dailyRentalRate":
-                return vehicle.getDailyRentalRate().toString();
-            case "status":
-                return vehicle.getStatus().toString();
-            case "category":
-                return vehicle.getCategory() != null ? vehicle.getCategory().getName() : "";
-            case "createdAt":
-                return vehicle.getCreatedAt() != null ? 
+        return switch (column) {
+            case "id" -> String.valueOf(vehicle.getId());
+            case "vin" -> vehicle.getVin();
+            case "make" -> vehicle.getMake();
+            case "model" -> vehicle.getModel();
+            case "year" -> String.valueOf(vehicle.getYear());
+            case "licensePlate" -> vehicle.getLicensePlate();
+            case "color" -> vehicle.getColor() != null ? vehicle.getColor() : "";
+            case "mileage" -> String.valueOf(vehicle.getMileage());
+            case "dailyRentalRate" -> vehicle.getDailyRentalRate().toString();
+            case "status" -> vehicle.getStatus().toString();
+            case "category" -> vehicle.getCategory() != null ? vehicle.getCategory().getName() : "";
+            case "createdAt" -> vehicle.getCreatedAt() != null ?
                     vehicle.getCreatedAt().format(formatter) : "";
-            default:
-                return "";
-        }
+            default -> "";
+        };
     }
 }
