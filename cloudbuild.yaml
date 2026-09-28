@@ -45,7 +45,7 @@ steps:
       - '--min-instances=0'
       - '--timeout=300s'
       - '--set-env-vars=SPRING_PROFILES_ACTIVE=gcp,FRONTEND_URL=https://fleet-app-568582430679.us-central1.run.app/'
-      - '--set-secrets=DB_URL=fleet-db-url:latest,DB_USERNAME=fleet-db-username:latest,DB_PASSWORD=fleet-db-password:latest,JWT_SECRET=fleet-jwt-secret:latest'
+      - '--set-secrets=MAIL_PASSWORD=MAIL_PASSWORD,DB_URL=fleet-db-url:latest,DB_USERNAME=fleet-db-username:latest,DB_PASSWORD=fleet-db-password:latest,JWT_SECRET=fleet-jwt-secret:latest'
     id: 'deploy'
     waitFor: ['push-commit-sha']
 
