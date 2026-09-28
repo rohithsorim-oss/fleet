@@ -7,7 +7,11 @@ import com.sorim.fleetmanagement.dto.response.ApiResponse;
 import com.sorim.fleetmanagement.dto.response.PageResponse;
 import com.sorim.fleetmanagement.dto.response.VehicleResponse;
 import com.sorim.fleetmanagement.entity.VehicleStatus;
+import com.sorim.fleetmanagement.service.ReportService;
 import com.sorim.fleetmanagement.service.VehicleService;
+
+import java.util.Arrays;
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 public class VehicleController {
 
     private final VehicleService vehicleService;
+    private final ReportService reportService;
 
     @GetMapping
     @Operation(
@@ -238,5 +243,63 @@ public class VehicleController {
             @PathVariable @NotNull Long id) {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.ok(ApiResponse.success("Vehicle deleted successfully", null));
+    }
+
+    @GetMapping("/report")
+    @Operation(
+            summary = "Download vehicle report as PDF or Excel",
+            description = "Generates and downloads a vehicle report in either PDF or Excel format. Supports filtering by status, category, year range, and text search. Allows column selection to customize the report content. The response is a downloadable file."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Report generated successfully - returns downloadable file (PDF or Excel)"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request parameters",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - JWT token required",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
+    public ResponseEntity<byte[]> downloadVehicleReport(
+            @Parameter(description = "Report format: 'pdf' or 'excel'", example = "excel", required = true)
+            @RequestParam @NotBlank String format,
+            @Parameter(description = "Comma-separated list of columns to include. Available columns: id, vin, make, model, year, licensePlate, color, mileage, dailyRentalRate, status, category, createdAt. If not specified, all columns are included.", example = "vin,make,model,year,status")
+            @RequestParam(required = false) String columns,
+            @Parameter(description = "Search term to filter vehicles by make, model, or license plate", example = "Toyota")
+            @RequestParam(required = false) String search,
+            @Parameter(description = "Filter by vehicle status", example = "AVAILABLE")
+            @RequestParam(required = false) String status,
+            @Parameter(description = "Filter by vehicle category ID", example = "1")
+            @RequestParam(required = false) Long categoryId,
+            @Parameter(description = "Minimum year filter (inclusive)", example = "2020")
+            @RequestParam(required = false) Integer minYear,
+            @Parameter(description = "Maximum year filter (inclusive)", example = "2024")
+            @RequestParam(required = false) Integer maxYear,
+            @Parameter(description = "Field to sort by", example = "year")
+            @RequestParam(defaultValue = "id") String sortBy,
+            @Parameter(description = "Sort direction (asc or desc)", example = "desc")
+            @RequestParam(defaultValue = "desc") String sortDir) {
+
+        java.util.List<String> columnList = columns != null && !columns.trim().isEmpty() 
+                ? Arrays.asList(columns.split(",")) 
+                : null;
+
+        return reportService.generateVehicleReport(
+                format,
+                columnList,
+                search,
+                status,
+                categoryId,
+                minYear,
+                maxYear,
+                sortBy,
+                sortDir
+        );
     }
 }
